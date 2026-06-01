@@ -25,15 +25,15 @@ const durationToHeight = (start: string, end: string) => {
   return (diffMin / 60) * hourHeight;
 };
 
-// Simple color mapping for courses
+// Simple color mapping for courses themed in UCI Blues and Gold/Yellows
 const COURSE_COLORS: Record<string, string> = {
-  ICS: 'bg-blue-100 text-blue-700 border-blue-200',
-  MATH: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-  ECON: 'bg-amber-100 text-amber-700 border-amber-200',
-  WRITING: 'bg-purple-100 text-purple-700 border-purple-200',
-  'BIO SCI': 'bg-rose-100 text-rose-700 border-rose-200',
-  COMPSCI: 'bg-indigo-100 text-indigo-700 border-indigo-200',
-  DEFAULT: 'bg-slate-100 text-slate-700 border-slate-200'
+  ICS: 'bg-blue-50 text-blue-900 border-blue-200/80',
+  MATH: 'bg-amber-50 text-amber-900 border-amber-200/80',
+  ECON: 'bg-yellow-50 text-yellow-900 border-yellow-200/80',
+  WRITING: 'bg-sky-50 text-sky-900 border-sky-200/80',
+  'BIO SCI': 'bg-cyan-50 text-cyan-900 border-cyan-200/80',
+  COMPSCI: 'bg-indigo-50 text-indigo-900 border-indigo-200/80',
+  DEFAULT: 'bg-slate-50 text-slate-800 border-slate-200/80'
 };
 
 export const Calendar: React.FC<CalendarProps> = ({ selectedCourses, conflicts }) => {
@@ -49,13 +49,13 @@ export const Calendar: React.FC<CalendarProps> = ({ selectedCourses, conflicts }
   }, [selectedCourses, conflicts]);
 
   return (
-    <div id="calendar-container" className="flex flex-col h-full bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div id="calendar-container" className="flex flex-col h-full bg-white rounded-2xl shadow-md border-2 border-gray-200 overflow-hidden">
       {/* Header */}
-      <div className="grid grid-cols-[64px_1fr] border-bottom border-gray-100 bg-gray-50/50">
-        <div className="h-10 border-r border-gray-100"></div>
-        <div className="grid grid-cols-5 divide-x divide-gray-100">
+      <div className="grid grid-cols-[64px_1fr] border-b-2 border-gray-200 bg-gray-50 pr-[6px]">
+        <div className="h-10 border-r-2 border-gray-200"></div>
+        <div className="grid grid-cols-5 divide-x-2 divide-gray-200">
           {DAYS.map(day => (
-            <div key={day} className="flex items-center justify-center text-xs font-semibold text-gray-500 uppercase tracking-wider h-10">
+            <div key={day} className="flex items-center justify-center text-xs font-black text-gray-500 uppercase tracking-widest h-10">
               {day}
             </div>
           ))}
@@ -66,10 +66,10 @@ export const Calendar: React.FC<CalendarProps> = ({ selectedCourses, conflicts }
       <div className="relative flex-1 overflow-y-auto overflow-x-hidden min-h-0 custom-scrollbar">
         <div className="grid grid-cols-[64px_1fr] min-h-[832px]"> {/* 13 hours * 64px */}
           {/* Time markings column */}
-          <div className="relative border-r border-gray-100 bg-gray-50/30">
+          <div className="relative border-r-2 border-gray-200 bg-gray-50/50">
             {HOURS.map(hour => (
               <div key={hour} className="h-16 flex items-start justify-center pt-2">
-                <span className="text-[10px] font-medium text-gray-400 tabular-nums">
+                <span className="text-[10px] font-bold text-gray-400 tabular-nums">
                   {hour > 12 ? `${hour - 12} PM` : hour === 12 ? '12 PM' : `${hour} AM`}
                 </span>
               </div>
@@ -80,11 +80,11 @@ export const Calendar: React.FC<CalendarProps> = ({ selectedCourses, conflicts }
           <div className="relative">
             {/* Horizontal lines */}
             {HOURS.map(hour => (
-              <div key={hour} className="h-16 border-b border-gray-100" />
+              <div key={hour} className="h-16 border-b border-gray-150" />
             ))}
 
             {/* Vertical lines */}
-            <div className="absolute inset-0 grid grid-cols-5 divide-x divide-gray-100 pointer-events-none">
+            <div className="absolute inset-0 grid grid-cols-5 divide-x-2 divide-gray-200 pointer-events-none">
               {Array.from({ length: 5 }).map((_, i) => (
                 <div key={i} className="h-full" />
               ))}
@@ -93,44 +93,51 @@ export const Calendar: React.FC<CalendarProps> = ({ selectedCourses, conflicts }
             {/* Course blocks */}
             <div className="absolute inset-0">
                <div className="grid grid-cols-5 h-full relative">
-                  <AnimatePresence>
-                    {scheduledItems.map((item) => {
-                      const dayIndex = DAYS.indexOf(item.day);
-                      const colorClass = COURSE_COLORS[item.course.dept] || COURSE_COLORS.DEFAULT;
-                      const top = timeToPosition(item.start);
-                      const height = durationToHeight(item.start, item.end);
+                 {DAYS.map((day) => {
+                   const itemsForDay = scheduledItems.filter(item => item.day === day);
+                   return (
+                     <div key={day} className="relative h-full w-full">
+                       <AnimatePresence>
+                         {itemsForDay.map((item) => {
+                           const colorClass = COURSE_COLORS[item.course.dept] || COURSE_COLORS.DEFAULT;
+                           const top = timeToPosition(item.start);
+                           const height = durationToHeight(item.start, item.end);
 
-                      return (
-                        <motion.div
-                          key={item.itemKey}
-                          initial={{ opacity: 0, scale: 0.95 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.9 }}
-                          className={`absolute left-0 right-0 m-1 rounded-lg border p-2 overflow-hidden shadow-sm transition-colors border-l-4 ${item.isConflicting ? 'border-l-red-500 bg-red-50 text-red-700' : colorClass}`}
-                          style={{
-                            gridColumnStart: dayIndex + 1,
-                            top: `${top}px`,
-                            height: `${height}px`,
-                            zIndex: item.isConflicting ? 20 : 10
-                          }}
-                        >
-                          <div className="flex flex-col h-full">
-                            <span className="text-[10px] font-bold leading-tight truncate">
-                              {item.course.dept} {item.course.number}
-                            </span>
-                            <span className="text-[9px] font-medium opacity-80 truncate">
-                              {item.course.title}
-                            </span>
-                            {height > 40 && (
-                              <span className="mt-auto text-[8px] font-semibold tabular-nums opacity-70">
-                                {item.start} - {item.end}
-                              </span>
-                            )}
-                          </div>
-                        </motion.div>
-                      );
-                    })}
-                  </AnimatePresence>
+                           return (
+                             <motion.div
+                               key={item.itemKey}
+                               initial={{ opacity: 0, scale: 0.95 }}
+                               animate={{ opacity: 1, scale: 1 }}
+                               exit={{ opacity: 0, scale: 0.9 }}
+                               className={`absolute left-0 right-0 m-1 rounded-lg border-2 p-2 overflow-hidden shadow-sm transition-colors border-l-4 ${item.isConflicting ? 'border-l-red-600 bg-red-100/70 text-red-950 border-red-300' : 'border-l-[#0064A4] ' + colorClass}`}
+                               style={{
+                                 top: `${top}px`,
+                                 height: `${height}px`,
+                                 zIndex: item.isConflicting ? 20 : 10
+                                }}
+                             >
+                               <div className="flex flex-col h-full justify-between">
+                                 <div>
+                                   <span className="text-[10px] font-black leading-tight block truncate uppercase">
+                                     {item.course.dept} {item.course.number}
+                                   </span>
+                                   <span className="text-[9px] font-bold opacity-90 block truncate leading-tight mt-0.5">
+                                     {item.course.title}
+                                   </span>
+                                 </div>
+                                 {height > 40 && (
+                                   <span className="text-[8px] font-black font-mono tracking-wider tabular-nums opacity-80 uppercase">
+                                     {item.start} - {item.end}
+                                   </span>
+                                 )}
+                               </div>
+                             </motion.div>
+                           );
+                         })}
+                       </AnimatePresence>
+                     </div>
+                   );
+                 })}
                </div>
             </div>
           </div>

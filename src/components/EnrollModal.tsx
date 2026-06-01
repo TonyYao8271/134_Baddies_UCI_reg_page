@@ -25,42 +25,42 @@ export const EnrollModal: React.FC<EnrollModalProps> = ({ isOpen, onClose, cours
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 overflow-hidden"
+            className="relative bg-white rounded-none shadow-2xl w-full max-w-md p-8 overflow-hidden border-4 border-[#0064A4]"
           >
             <button 
               onClick={onClose}
-              className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-600"
+              className="absolute top-4 right-4 p-2 hover:bg-gray-150 border border-transparent hover:border-gray-300 rounded-none transition-colors text-gray-400 hover:text-gray-600"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="flex flex-col items-center text-center">
-              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6 shadow-inner">
+              <div className="w-20 h-20 bg-green-50 rounded-none flex items-center justify-center mb-6 border-2 border-green-600">
                 <CheckCircle2 className="w-10 h-10 text-green-600" />
               </div>
               
-              <h2 className="text-2xl font-black text-gray-900 mb-2">Enrollment Success!</h2>
-              <p className="text-gray-500 text-sm mb-8 leading-relaxed">
+              <h2 className="text-xl font-black text-gray-900 mb-2 uppercase tracking-wide">Enrollment Success!</h2>
+              <p className="text-gray-550 text-xs mb-8 leading-relaxed font-semibold">
                 You've successfully registered for the following courses. Good luck with your quarter, Anteater!
               </p>
 
-              <div className="w-full bg-gray-50 rounded-2xl p-4 space-y-2 mb-8 max-h-[200px] overflow-y-auto">
+              <div className="w-full bg-gray-50 border border-gray-255 rounded-none p-4 space-y-2 mb-8 max-h-[180px] overflow-y-auto">
                 {courses.map(course => (
-                  <div key={course.id} className="flex justify-between items-center text-left border-b border-gray-100 last:border-0 pb-2 last:pb-0">
+                  <div key={course.id} className="flex justify-between items-center text-left border-b border-gray-150 last:border-0 pb-2 last:pb-0">
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-gray-900 leading-tight">
+                      <p className="text-xs font-black text-gray-900 leading-tight">
                         {course.dept} {course.number}
                       </p>
-                      <p className="text-[10px] text-gray-500 truncate">{course.title}</p>
+                      <p className="text-[10px] text-gray-500 font-semibold truncate">{course.title}</p>
                     </div>
-                    <span className="text-[10px] font-black text-uci-blue tabular-nums">{course.units}u</span>
+                    <span className="text-[10px] font-black text-[#0064A4] tabular-nums bg-blue-50 border border-blue-105 px-1.5 py-0.5">{course.units}u</span>
                   </div>
                 ))}
               </div>
 
               <button
                 onClick={onClose}
-                className="w-full py-4 bg-gray-900 text-white rounded-2xl text-sm font-bold shadow-xl shadow-gray-200 hover:bg-gray-800 transition-all active:scale-[0.98]"
+                className="w-full py-4 bg-[#0064A4] text-white border-2 border-[#0064A4] hover:bg-[#FFD200] hover:text-[#0064A4] hover:border-[#0064A4] rounded-none text-sm font-black uppercase tracking-widest transition-all active:scale-[0.98]"
               >
                 Close & Return
               </button>
